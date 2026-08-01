@@ -21,6 +21,29 @@ So headless-vs-headed is a per-run flag on this one server, not a second
 server. `browser-mine` can coexist because its vocabulary is entirely
 different.
 
+## Access level: `enabled`, not `deferred`
+
+The 24 `browser_*` tools cost ~4.2k tokens, about 27% of a session's tool list.
+That looks like a case for `deferred` (hidden from `tools/list`, still callable
+via `tool_search`) — but it isn't. Only a session that explicitly asked for the
+`browser` trait pays that cost, so deferring would hide the tools from the one
+session that requested them and buy a `tool_search` round trip for nothing.
+
+Deferral is for packs that load into every session regardless of intent. Trait
+gating already solves the same problem here, earlier.
+
+## Known limitation: the browser is shared across sessions
+
+Barry connects a pack once and pools that connection, so every session holding
+a browsing trait shares one browser context and one tab. Verified: session A
+set `window.__barry_marker` and navigated; session B read back both.
+
+`--shared-browser-context` is therefore not worth enabling — contexts are
+already shared. The inverse (a context per session) is not reachable by a
+server flag either: `@playwright/mcp` isolates per client connection, and
+Barry presents itself as a single client. Fixing it would mean per-session pack
+connections in `PackConnectionPool`, which is a Barry-side change.
+
 ## Why an upstream server instead of our own tools
 
 This replaces a homegrown `playwright` pack that drove pages by CSS selector
