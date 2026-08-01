@@ -134,6 +134,29 @@ pack's `mcp-servers` entry.
 Your browser still goes away when the session does, so treat anything you open
 as scoped to this session.
 
+## Recording a video
+
+There is no recording tool. Playwright records per browser *context*, so make a
+recorded one through `browser_run_code_unsafe` and drive that page:
+
+```js
+async (page) => {
+  const browser = page.context().browser();
+  const rec = await browser.newContext({
+    recordVideo: { dir: "/tmp/out", size: { width: 1280, height: 720 } },
+  });
+  const p = await rec.newPage();
+  await p.goto("https://example.com");
+  // ...drive p...
+  await p.close();
+  await rec.close();   // the file is only flushed on context close
+  return "recorded";
+}
+```
+
+Sizes: 854×480, 1280×720, 1920×1080. The video lands in `dir` as `.webm`, and
+appears only after `rec.close()` — checking earlier shows an empty directory.
+
 ## Cautions
 
 - First call in a mode is slow: `npx` fetches and caches the pinned server.
