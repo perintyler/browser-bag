@@ -18,6 +18,10 @@ mcp-servers:
   browser:
     command: npx
     args: ["-y", "@playwright/mcp@0.0.78", "--headless", "--isolated"]
+    # A browser tab is state. Without this every Barry session shares one
+    # connection and therefore one tab, so a concurrent session can navigate
+    # the page out from under you mid-task.
+    session-scoped: true
 
 dependencies:
   - name: npx

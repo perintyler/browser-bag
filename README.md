@@ -32,17 +32,17 @@ session that requested them and buy a `tool_search` round trip for nothing.
 Deferral is for packs that load into every session regardless of intent. Trait
 gating already solves the same problem here, earlier.
 
-## Known limitation: the browser is shared across sessions
+## Each session gets its own browser
 
-Barry connects a pack once and pools that connection, so every session holding
-a browsing trait shares one browser context and one tab. Verified: session A
-set `window.__barry_marker` and navigated; session B read back both.
+The manifest sets `session-scoped: true`. Barry pools pack connections
+process-wide by default, which for a browser meant every session drove the same
+tab — verified: one session set `window.__barry_marker` and navigated, and an
+independent session read back both.
 
-`--shared-browser-context` is therefore not worth enabling — contexts are
-already shared. The inverse (a context per session) is not reachable by a
-server flag either: `@playwright/mcp` isolates per client connection, and
-Barry presents itself as a single client. Fixing it would mean per-session pack
-connections in `PackConnectionPool`, which is a Barry-side change.
+`session-scoped` moves the pack out of the eager shared pool and keys its
+connection by session id, so each session gets its own browser process,
+reclaimed when the session's transport closes. See `docs/packs.md` in the Barry
+repo.
 
 ## Why an upstream server instead of our own tools
 
