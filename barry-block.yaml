@@ -6,14 +6,14 @@ description: Web browsing and browser automation
 #
 # Session tool filtering resolves traits to a Set of bare tool NAMES, and every
 # @playwright/mcp instance exports the same 24 `browser_*` names. A second
-# Playwright server — in this pack or a sibling one — therefore survives a trait
+# Playwright server — in this block or a sibling one — therefore survives a trait
 # filter meant for this one, and the model sees every browser tool twice with no
 # way to tell the two apart. Verified live: a session traited `browser-headless`
 # received 48 tools from both namespaces.
 #
 # So headless-vs-headed is a per-run flag, not a second server. `--isolated`
 # keeps each run on a fresh profile; for the user's real logins use the
-# `browser-mine` pack, whose vocabulary is distinct and so can coexist.
+# `browser-mine` block, whose vocabulary is distinct and so can coexist.
 mcp-servers:
   browser:
     command: npx
