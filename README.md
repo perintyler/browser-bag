@@ -41,7 +41,7 @@ independent session read back both.
 
 `session-scoped` moves the pack out of the eager shared pool and keys its
 connection by session id, so each session gets its own browser process,
-reclaimed when the session's transport closes. See `docs/packs.md` in the Barry
+reclaimed when the session's transport closes. See `docs/bags.md` in the Barry
 repo.
 
 ## Why an upstream server instead of our own tools
